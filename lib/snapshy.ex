@@ -181,17 +181,15 @@ defmodule Snapshy do
   #############################################################################
 
   defp serialize(value) do
-    value
-    |> Inspect.Algebra.to_doc(inspect_options())
-    |> Inspect.Algebra.group()
-    |> Inspect.Algebra.format(80)
-    |> Enum.join()
-  end
-
-  defp deserialize(value) do
-    {term, []} = Code.eval_string(value, [], __ENV__)
-
-    term
+    if is_binary(value) and String.valid?(value) do
+      value
+    else
+      value
+      |> Inspect.Algebra.to_doc(inspect_options())
+      |> Inspect.Algebra.group()
+      |> Inspect.Algebra.format(80)
+      |> Enum.join()
+    end
   end
 
   defp inspect_options do
@@ -252,7 +250,7 @@ defmodule Snapshy do
   end
 
   defp get_snapshot(file) do
-    File.read!(file) |> deserialize()
+    File.read!(file)
   end
 
   defp create_empty_snapshot(file) do
